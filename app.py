@@ -583,7 +583,7 @@ if selected == 'Diabetes Prediction':
     # Left column: Input form
     
         with col_result:
-                image = "https://partheniumprojects.com/wp-content/uploads/2019/01/Diabetes-Prediction-Using-Data-Mining.jpg"
+                image = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fphotos%2Fdiabetes&psig=AOvVaw0d4C3Xk_biIFpghvqcuX5K&ust=1745148547521000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCOjkmpH_44wDFQAAAAAdAAAAABAE"
                 st.markdown(
                     """
                     <style>
