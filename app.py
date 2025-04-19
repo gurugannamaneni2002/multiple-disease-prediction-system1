@@ -15,7 +15,7 @@ working_dir = os.path.dirname(os.path.abspath(__file__))
 heart_disease_model = pickle.load(open(f'{working_dir}/saved_models/heart_disease_model.sav', 'rb'))
 lung_cancer_model = pickle.load(open(f'{working_dir}/saved_models/lung_cancer_model.sav', 'rb'))
 kidney_disease_model = pickle.load(open(f'{working_dir}/saved_models/kidney_disease_model.sav', 'rb'))
-breast_cancer_model = pickle.load(open(f'{working_dir}/saved_models/Breast_cancer_model.sav', 'rb'))
+breast_cancer_model = pickle.load(open(f'{working_dir}/saved_models/breast_cancer_model.sav', 'rb'))
 diabetes_model = pickle.load(open(f'{working_dir}/saved_models/diabetes_chance_model.sav', 'rb'))
 
 # Sidebar for navigation
@@ -37,360 +37,469 @@ if selected == 'Heart Disease Prediction':
     # Page title
     st.title('Heart Disease Prediction using ML')
 
-    # Input form
-    col1, col2, col3 = st.columns(3)
+    # Layout with two columns
+    col_form, col_result = st.columns([2, 1])
 
-    with col1:
-        age = st.number_input('Age', min_value=1, max_value=120, step=1, value=25)
+    # Left column: Input form
+    with col_form:
+        st.subheader("Enter Patient Details")
 
-    with col2:
-        sex = st.selectbox('Sex', options=[1, 0], format_func=lambda x: "Male" if x == 1 else "Female")
+        col1, col2, col3 = st.columns(3)
 
-    with col3:
-        cp = st.selectbox('Chest Pain Type', 
-                          options=[1, 2, 3, 4], 
-                          format_func=lambda x: {1: "Typical Angina", 
-                                                 2: "Atypical Angina", 
-                                                 3: "Non-anginal Pain", 
-                                                 4: "Asymptomatic"}[x])
+        with col1:
+            age = st.number_input('Age', min_value=1, max_value=120, step=1, value=25)
 
-    with col1:
-        trestbps = st.number_input('Resting Blood Pressure (mm Hg)', min_value=50, max_value=250, step=1, value=120)
+        with col2:
+            sex = st.selectbox('Sex', options=[1, 0], format_func=lambda x: "Male" if x == 1 else "Female")
 
-    with col2:
-        chol = st.number_input('Serum Cholesterol (mg/dL)', min_value=100, max_value=600, step=1, value=200)
+        with col3:
+            cp = st.selectbox('Chest Pain Type', 
+                              options=[1, 2, 3, 4], 
+                              format_func=lambda x: {1: "Typical Angina", 
+                                                     2: "Atypical Angina", 
+                                                     3: "Non-anginal Pain", 
+                                                     4: "Asymptomatic"}[x])
 
-    with col3:
-        fbs = st.selectbox('Fasting Blood Sugar > 120 mg/dL', options=[1, 0], format_func=lambda x: "Yes" if x == 1 else "No")
+        with col1:
+            trestbps = st.number_input('Resting Blood Pressure (mm Hg)', min_value=50, max_value=250, step=1, value=120)
 
-    with col1:
-        restecg = st.selectbox('Resting Electrocardiographic Results', 
-                               options=[0, 1, 2], 
-                               format_func=lambda x: {0: "Normal", 
-                                                      1: "ST-T Wave Abnormality", 
-                                                      2: "Probable/Definite LVH"}[x])
+        with col2:
+            chol = st.number_input('Serum Cholesterol (mg/dL)', min_value=100, max_value=600, step=1, value=200)
 
-    with col2:
-        thalach = st.number_input('Maximum Heart Rate Achieved', min_value=50, max_value=250, step=1, value=150)
+        with col3:
+            fbs = st.selectbox('Fasting Blood Sugar > 120 mg/dL', options=[1, 0], format_func=lambda x: "Yes" if x == 1 else "No")
 
-    with col3:
-        exang = st.selectbox('Exercise Induced Angina', options=[1, 0], format_func=lambda x: "Yes" if x == 1 else "No")
+        with col1:
+            restecg = st.selectbox('Resting Electrocardiographic Results', 
+                                   options=[0, 1, 2], 
+                                   format_func=lambda x: {0: "Normal", 
+                                                          1: "ST-T Wave Abnormality", 
+                                                          2: "Probable/Definite LVH"}[x])
 
-    with col1:
-        oldpeak = st.number_input('ST Depression Induced by Exercise', min_value=0.0, max_value=10.0, step=0.1, value=1.0)
+        with col2:
+            thalach = st.number_input('Maximum Heart Rate Achieved', min_value=50, max_value=250, step=1, value=150)
 
-    with col2:
-        slope = st.selectbox('Slope of the Peak Exercise ST Segment', 
-                             options=[1, 2, 3], 
-                             format_func=lambda x: {1: "Upsloping", 
-                                                    2: "Flat", 
-                                                    3: "Downsloping"}[x])
+        with col3:
+            exang = st.selectbox('Exercise Induced Angina', options=[1, 0], format_func=lambda x: "Yes" if x == 1 else "No")
 
-    with col3:
-        ca = st.number_input('Number of Major Vessels Colored by Flouroscopy', min_value=0, max_value=3, step=1, value=0)
+        with col1:
+            oldpeak = st.number_input('ST Depression Induced by Exercise', min_value=0.0, max_value=10.0, step=0.1, value=1.0)
 
-    with col1:
-        thal = st.selectbox('Thalassemia', 
-                            options=[3, 6, 7], 
-                            format_func=lambda x: {3: "Normal", 
-                                                   6: "Fixed Defect", 
-                                                   7: "Reversible Defect"}[x])
+        with col2:
+            slope = st.selectbox('Slope of the Peak Exercise ST Segment', 
+                                 options=[1, 2, 3], 
+                                 format_func=lambda x: {1: "Upsloping", 
+                                                        2: "Flat", 
+                                                        3: "Downsloping"}[x])
 
-    # Prediction code
-    heart_diagnosis = ''
+        with col3:
+            ca = st.number_input('Number of Major Vessels Colored by Flouroscopy', min_value=0, max_value=3, step=1, value=0)
 
-    if st.button('Heart Disease Test Result'):
-        user_input = [age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]
+        with col1:
+            thal = st.selectbox('Thalassemia', 
+                                options=[3, 6, 7], 
+                                format_func=lambda x: {3: "Normal", 
+                                                       6: "Fixed Defect", 
+                                                       7: "Reversible Defect"}[x])
 
-        heart_prediction = heart_disease_model.predict([user_input])
+        with col_result:
+            image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQS1CXYt4qBFLJCMXYVcMmpxYTbKOvcK4qjA&s"
+            st.markdown(
+                """
+                <style>
+                .rounded-image {
+                    border-radius: 15px; /* Adjust the roundness */
+                    overflow: hidden;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"""
+                <div class="rounded-image">
+                    <img src="{image}" alt="Heart Health" style="width: 100%; height: auto;">
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            
+            # Button for prediction
+            if st.button('Heart Disease Test Result'):
+                # Prepare user input for prediction
+                user_input = [age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]
 
-        if heart_prediction[0] == 1:
-            heart_diagnosis = 'The person is having heart disease'
-        else:
-            heart_diagnosis = 'The person does not have any heart disease'
+                # Perform prediction
+                try:
+                    heart_prediction = heart_disease_model.predict([user_input])
 
-    st.success(heart_diagnosis)
+                    # Determine the result
+                    if heart_prediction[0] == 1:
+                        heart_diagnosis = 'The person is having heart disease'
+                    else:
+                        heart_diagnosis = 'The person does not have any heart disease'
+
+                    # Display the result
+                    st.subheader("Prediction Result")
+                    st.success(heart_diagnosis)
+                except Exception as e:
+                    st.error(f"An error occurred during prediction: {e}")
 
 # Lung Cancer Prediction Page
 if selected == 'Lung Cancer Prediction':
 
     # Page title
     st.title('Lung Cancer Prediction using ML')
+    col_form, col_result = st.columns([2, 1])
+
+    # Left column: Input form
+    with col_form:
+        st.subheader("Enter Patient Details")
 
     # Input form
-    col1, col2, col3 = st.columns(3)
+        col1, col2, col3 = st.columns(3)
 
-    with col1:
-        gender = st.selectbox('Gender', options=[1, 0], format_func=lambda x: "Male" if x == 1 else "Female")
+        with col1:
+            gender = st.selectbox('Gender', options=[1, 0], format_func=lambda x: "Male" if x == 1 else "Female")
 
-    with col2:
-        age = st.number_input('Age', min_value=1, max_value=120, step=1, value=25)
+        with col2:
+            age = st.number_input('Age', min_value=1, max_value=120, step=1, value=25)
 
-    with col3:
-        smoking = st.selectbox('Smoking', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+        with col3:
+            smoking = st.selectbox('Smoking', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
 
-    with col1:
-        yellow_fingers = st.selectbox('Yellow Fingers', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+        with col1:
+            yellow_fingers = st.selectbox('Yellow Fingers', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
 
-    with col2:
-        anxiety = st.selectbox('Anxiety', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+        with col2:
+            anxiety = st.selectbox('Anxiety', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
 
-    with col3:
-        peer_pressure = st.selectbox('Peer Pressure', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+        with col3:
+            peer_pressure = st.selectbox('Peer Pressure', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
 
-    with col1:
-        chronic_disease = st.selectbox('Chronic Disease', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+        with col1:
+            chronic_disease = st.selectbox('Chronic Disease', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
 
-    with col2:
-        fatigue = st.selectbox('Fatigue', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+        with col2:
+            fatigue = st.selectbox('Fatigue', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
 
-    with col3:
-        allergy = st.selectbox('Allergy', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+        with col3:
+            allergy = st.selectbox('Allergy', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
 
-    with col1:
-        wheezing = st.selectbox('Wheezing', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+        with col1:
+            wheezing = st.selectbox('Wheezing', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
 
-    with col2:
-        alcohol_consuming = st.selectbox('Alcohol Consuming', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+        with col2:
+            alcohol_consuming = st.selectbox('Alcohol Consuming', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
 
-    with col3:
-        coughing = st.selectbox('Coughing', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+        with col3:
+            coughing = st.selectbox('Coughing', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
 
-    with col1:
-        shortness_of_breath = st.selectbox('Shortness of Breath', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+        with col1:
+            shortness_of_breath = st.selectbox('Shortness of Breath', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
 
-    with col2:
-        swallowing_difficulty = st.selectbox('Swallowing Difficulty', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+        with col2:
+            swallowing_difficulty = st.selectbox('Swallowing Difficulty', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
 
-    with col3:
-        chest_pain = st.selectbox('Chest Pain', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+        with col3:
+            chest_pain = st.selectbox('Chest Pain', options=[2, 1], format_func=lambda x: "Yes" if x == 2 else "No")
+
+        with col_result:
+            image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTipqFY3P9ED5zgwFBX6la03MV1tGVcGphHsBRCSGroAPtNjzrb_oRX-aVEpd2oahcxxWo&usqp=CAU"
+            st.markdown(
+                """
+                <style>
+                .rounded-image {
+                    border-radius: 15px; /* Adjust the roundness */
+                    overflow: hidden;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"""
+                <div class="rounded-image">
+                    <img src="{image}" alt="Heart Health" style="width: 100%; height: auto;">
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
     # Prediction code
-    lung_diagnosis = ''
+            lung_diagnosis = ''
 
-    if st.button('Lung Cancer Test Result'):
-        user_input = [gender, age, smoking, yellow_fingers, anxiety, peer_pressure, chronic_disease, fatigue, allergy, wheezing, alcohol_consuming, coughing, shortness_of_breath, swallowing_difficulty, chest_pain]
+            if st.button('Lung Cancer Test Result'):
+                user_input = [gender, age, smoking, yellow_fingers, anxiety, peer_pressure, chronic_disease, fatigue, allergy, wheezing, alcohol_consuming, coughing, shortness_of_breath, swallowing_difficulty, chest_pain]
 
-        lung_prediction = lung_cancer_model.predict([user_input])
+                lung_prediction = lung_cancer_model.predict([user_input])
 
-        if lung_prediction[0] == 1:
-            lung_diagnosis = 'The person is at risk of lung cancer'
-        else:
-            lung_diagnosis = 'The person is not at risk of lung cancer'
+                if lung_prediction[0] == 1:
+                    lung_diagnosis = 'The person is at risk of lung cancer'
+                else:
+                    lung_diagnosis = 'The person is not at risk of lung cancer'
 
-    st.success(lung_diagnosis)
+            st.success(lung_diagnosis)
 
 # Kidney Disease Prediction Page
 if selected == 'Kidney Disease Prediction':
     
     # Page title
     st.title('Kidney Disease Prediction using ML')
-    
+    col_form, col_result = st.columns([2, 1])
+
+    # Left column: Input form
+    with col_form:
+        st.subheader("Enter Patient Details")
     # Input form
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        age = st.number_input('Age', min_value=1, max_value=100, step=1, value=25)
+        col1, col2, col3 = st.columns(3)
         
-    with col2:
-        blood_pressure = st.number_input('Blood Pressure (mm Hg)', min_value=50, max_value=180, step=1, value=80)
+        with col1:
+            age = st.number_input('Age', min_value=1, max_value=100, step=1, value=25)
+            
+        with col2:
+            blood_pressure = st.number_input('Blood Pressure (mm Hg)', min_value=50, max_value=180, step=1, value=80)
+            
+        with col3:
+            specific_gravity = st.number_input('Specific Gravity', min_value=1.005, max_value=1.025, step=0.005, value=1.020)
         
-    with col3:
-        specific_gravity = st.number_input('Specific Gravity', min_value=1.005, max_value=1.025, step=0.005, value=1.020)
-    
-    with col1:
-        albumin = st.number_input('Albumin Level', min_value=0, max_value=5, step=1, value=0)
-        
-    with col2:
-        sugar = st.number_input('Sugar Level', min_value=0, max_value=5, step=1, value=0)
-        
-    with col3:
-        red_blood_cells = st.selectbox('Red Blood Cells (Normal=1, Abnormal=0)', 
-                                      options=[1, 0], 
-                                      format_func=lambda x: "Yes" if x == 1 else "No")
-    
-    with col1:
-        pus_cell = st.selectbox('Pus Cell (Normal=1, Abnormal=0)', 
-                               options=[1, 0], 
-                               format_func=lambda x: "Yes" if x == 1 else "No")
-        
-    with col2:
-        pus_cell_clumps = st.selectbox('Pus Cell Clumps (Present=1, Not Present=0)', 
-                                      options=[1, 0], 
-                                      format_func=lambda x: "Yes" if x == 1 else "No")
-        
-    with col3:
-        bacteria = st.selectbox('Bacteria (Present=1, Not Present=0)', 
-                              options=[1, 0], 
-                              format_func=lambda x: "Yes" if x == 1 else "No")
-    
-    with col1:
-        blood_glucose_random = st.number_input('Blood Glucose Random (mgs/dl)', 
-                                             min_value=20, max_value=500, step=1, value=121)
-        
-    with col2:
-        blood_urea = st.number_input('Blood Urea (mgs/dl)', 
-                                    min_value=1, max_value=400, step=1, value=36)
-        
-    with col3:
-        serum_creatinine = st.number_input('Serum Creatinine (mgs/dl)', 
-                                          min_value=0.4, max_value=76.0, step=0.1, value=1.2)
-    
-    with col1:
-        sodium = st.number_input('Sodium (mEq/L)', 
-                               min_value=4.5, max_value=163.0, step=0.1, value=145.0)
-        
-    with col2:
-        potassium = st.number_input('Potassium (mEq/L)', 
-                                   min_value=2.5, max_value=47.0, step=0.1, value=4.3)
-        
-    with col3:
-        haemoglobin = st.number_input('Haemoglobin (gms)', 
-                                     min_value=3.1, max_value=17.8, step=0.1, value=15.4)
-    
-    with col1:
-        packed_cell_volume = st.number_input('Packed Cell Volume', 
-                                           min_value=9, max_value=54, step=1, value=44)
-        
-    with col2:
-        white_blood_cell_count = st.number_input('White Blood Cell Count (cells/cumm)', 
-                                                min_value=2200, max_value=26400, step=100, value=7800)
-        
-    with col3:
-        red_blood_cell_count = st.number_input('Red Blood Cell Count (millions/cmm)', 
-                                              min_value=2.1, max_value=8.0, step=0.1, value=5.2)
-    
-    with col1:
-        hypertension = st.selectbox('Hypertension', 
-                                   options=[1, 0], 
-                                   format_func=lambda x: "Yes" if x == 1 else "No")
-        
-    with col2:
-        diabetes_mellitus = st.selectbox('Diabetes Mellitus', 
+        with col1:
+            albumin = st.number_input('Albumin Level', min_value=0, max_value=5, step=1, value=0)
+            
+        with col2:
+            sugar = st.number_input('Sugar Level', min_value=0, max_value=5, step=1, value=0)
+            
+        with col3:
+            red_blood_cells = st.selectbox('Red Blood Cells (Normal=1, Abnormal=0)', 
                                         options=[1, 0], 
                                         format_func=lambda x: "Yes" if x == 1 else "No")
         
-    with col3:
-        coronary_artery_disease = st.selectbox('Coronary Artery Disease', 
-                                              options=[1, 0], 
-                                              format_func=lambda x: "Yes" if x == 1 else "No")
-    
-    with col1:
-        appetite = st.selectbox('Appetite (Good=0, Poor=1)', 
-                              options=[1, 0], 
-                              format_func=lambda x: "poor" if x == 1 else "good")
-        
-    with col2:
-        peda_edema = st.selectbox('Pedal Edema', 
-                                 options=[1, 0], 
-                                 format_func=lambda x: "Yes" if x == 1 else "No")
-        
-    with col3:
-        aanemia = st.selectbox('Anemia', 
-                              options=[1, 0], 
-                              format_func=lambda x: "Yes" if x == 1 else "No")
-    
-    # Prediction code
-    kidney_diagnosis = ''
-    
-    if st.button('Kidney Disease Test Result'):
-        user_input = [age, blood_pressure, specific_gravity, albumin, sugar, 
-                     red_blood_cells, pus_cell, pus_cell_clumps, bacteria,
-                     blood_glucose_random, blood_urea, serum_creatinine, sodium,
-                     potassium, haemoglobin, packed_cell_volume,
-                     white_blood_cell_count, red_blood_cell_count, hypertension,
-                     diabetes_mellitus, coronary_artery_disease, appetite,
-                     peda_edema, aanemia]
-        
-        kidney_prediction = kidney_disease_model.predict([user_input])
-        
-        if kidney_prediction[0] == 0:
-            kidney_diagnosis = 'The person has Kidney Disease'
-        else:
-            kidney_diagnosis = 'The person does not have Kidney Disease'
+        with col1:
+            pus_cell = st.selectbox('Pus Cell (Normal=1, Abnormal=0)', 
+                                options=[1, 0], 
+                                format_func=lambda x: "Yes" if x == 1 else "No")
             
-    st.success(kidney_diagnosis)
+        with col2:
+            pus_cell_clumps = st.selectbox('Pus Cell Clumps (Present=1, Not Present=0)', 
+                                        options=[1, 0], 
+                                        format_func=lambda x: "Yes" if x == 1 else "No")
+            
+        with col3:
+            bacteria = st.selectbox('Bacteria (Present=1, Not Present=0)', 
+                                options=[1, 0], 
+                                format_func=lambda x: "Yes" if x == 1 else "No")
+        
+        with col1:
+            blood_glucose_random = st.number_input('Blood Glucose Random (mgs/dl)', 
+                                                min_value=20, max_value=500, step=1, value=121)
+            
+        with col2:
+            blood_urea = st.number_input('Blood Urea (mgs/dl)', 
+                                        min_value=1, max_value=400, step=1, value=36)
+            
+        with col3:
+            serum_creatinine = st.number_input('Serum Creatinine (mgs/dl)', 
+                                            min_value=0.4, max_value=76.0, step=0.1, value=1.2)
+        
+        with col1:
+            sodium = st.number_input('Sodium (mEq/L)', 
+                                min_value=4.5, max_value=163.0, step=0.1, value=145.0)
+            
+        with col2:
+            potassium = st.number_input('Potassium (mEq/L)', 
+                                    min_value=2.5, max_value=47.0, step=0.1, value=4.3)
+            
+        with col3:
+            haemoglobin = st.number_input('Haemoglobin (gms)', 
+                                        min_value=3.1, max_value=17.8, step=0.1, value=15.4)
+        
+        with col1:
+            packed_cell_volume = st.number_input('Packed Cell Volume', 
+                                            min_value=9, max_value=54, step=1, value=44)
+            
+        with col2:
+            white_blood_cell_count = st.number_input('White Blood Cell Count (cells/cumm)', 
+                                                    min_value=2200, max_value=26400, step=100, value=7800)
+            
+        with col3:
+            red_blood_cell_count = st.number_input('Red Blood Cell Count (millions/cmm)', 
+                                                min_value=2.1, max_value=8.0, step=0.1, value=5.2)
+        
+        with col1:
+            hypertension = st.selectbox('Hypertension', 
+                                    options=[1, 0], 
+                                    format_func=lambda x: "Yes" if x == 1 else "No")
+            
+        with col2:
+            diabetes_mellitus = st.selectbox('Diabetes Mellitus', 
+                                            options=[1, 0], 
+                                            format_func=lambda x: "Yes" if x == 1 else "No")
+            
+        with col3:
+            coronary_artery_disease = st.selectbox('Coronary Artery Disease', 
+                                                options=[1, 0], 
+                                                format_func=lambda x: "Yes" if x == 1 else "No")
+        
+        with col1:
+            appetite = st.selectbox('Appetite (Good=0, Poor=1)', 
+                                options=[1, 0], 
+                                format_func=lambda x: "poor" if x == 1 else "good")
+            
+        with col2:
+            peda_edema = st.selectbox('Pedal Edema', 
+                                    options=[1, 0], 
+                                    format_func=lambda x: "Yes" if x == 1 else "No")
+            
+        with col3:
+            aanemia = st.selectbox('Anemia', 
+                                options=[1, 0], 
+                                format_func=lambda x: "Yes" if x == 1 else "No")
+        
+        with col_result:
+            image = "https://www.centerforurologiccare.com/wp-content/uploads/2023/06/kidney-cancer-3-AdobeStock_308398393.jpeg"
+            st.markdown(
+                """
+                <style>
+                .rounded-image {
+                    border-radius: 15px; /* Adjust the roundness */
+                    overflow: hidden;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"""
+                <div class="rounded-image">
+                    <img src="{image}" alt="Heart Health" style="width: 100%; height: auto;">
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            kidney_diagnosis = ''
+            
+            if st.button('Kidney Disease Test Result'):
+                user_input = [age, blood_pressure, specific_gravity, albumin, sugar, 
+                            red_blood_cells, pus_cell, pus_cell_clumps, bacteria,
+                            blood_glucose_random, blood_urea, serum_creatinine, sodium,
+                            potassium, haemoglobin, packed_cell_volume,
+                            white_blood_cell_count, red_blood_cell_count, hypertension,
+                            diabetes_mellitus, coronary_artery_disease, appetite,
+                            peda_edema, aanemia]
+                
+                kidney_prediction = kidney_disease_model.predict([user_input])
+                
+                if kidney_prediction[0] == 0:
+                    kidney_diagnosis = 'The person has Kidney Disease'
+                else:
+                    kidney_diagnosis = 'The person does not have Kidney Disease'
+                    
+            st.success(kidney_diagnosis)
 
 # Breast Cancer Prediction Page
 if selected == 'Breast Cancer Prediction':
     
     # Page title
     st.title('Breast Cancer Prediction using ML')
-    
+    col_form, col_result = st.columns([2, 1])
+
+    # Left column: Input form
+    with col_form:
+        st.subheader("Enter Patient Details")
     # Input form
-    col1, col2= st.columns(2)
-    
-    with col1:
-        mean_radius = st.number_input('Mean Radius', 
-                                    min_value=5.0, 
-                                    max_value=30.0, 
-                                    step=0.1, 
-                                    value=15.0,
-                                    help="Mean of distances from center to points on the perimeter")
+        col1, col2= st.columns(2)
         
-    with col2:
-        mean_texture = st.number_input('Mean Texture', 
-                                     min_value=5.0, 
-                                     max_value=40.0, 
-                                     step=0.1, 
-                                     value=18.0,
-                                     help="Standard deviation of gray-scale values")
-        
-    with col1:
-        mean_perimeter = st.number_input('Mean Perimeter', 
-                                       min_value=40.0, 
-                                       max_value=200.0, 
-                                       step=0.1, 
-                                       value=100.0,
-                                       help="Mean size of the core tumor")
-    
-    with col2:
-        mean_area = st.number_input('Mean Area', 
-                                  min_value=200.0, 
-                                  max_value=2000.0, 
-                                  step=1.0, 
-                                  value=800.0,
-                                  help="Mean area of the core tumor")
-        
-    with col1:
-        mean_smoothness = st.number_input('Mean Smoothness', 
-                                        min_value=0.05, 
-                                        max_value=0.20, 
-                                        step=0.001, 
-                                        value=0.10,
-                                        help="Mean of local variation in radius lengths")
-    
-    # Add information about the measurements
-    st.info("""
-    💡 Information about measurements:
-    - Radius: Mean of distances from center to points on the perimeter
-    - Texture: Standard deviation of gray-scale values
-    - Perimeter: Size of the core tumor
-    - Area: Area of the core tumor
-    - Smoothness: Local variation in radius lengths
-    """)
-    
-    # Prediction code
-    breast_cancer_diagnosis = ''
-    
-    if st.button('Breast Cancer Test Result'):
-        user_input = [mean_radius, mean_texture, mean_perimeter, 
-                     mean_area, mean_smoothness]
-        
-        breast_cancer_prediction = breast_cancer_model.predict([user_input])
-        
-        if breast_cancer_prediction[0] == 1:
-            breast_cancer_diagnosis = 'The breast mass is malignant (cancerous)'
-        else:
-            breast_cancer_diagnosis = 'The breast mass is benign (non-cancerous)'
+        with col1:
+            mean_radius = st.number_input('Mean Radius', 
+                                        min_value=5.0, 
+                                        max_value=30.0, 
+                                        step=0.1, 
+                                        value=15.0,
+                                        help="Mean of distances from center to points on the perimeter")
             
-    if breast_cancer_diagnosis:
-        if 'malignant' in breast_cancer_diagnosis:
-            st.error(breast_cancer_diagnosis)
-            st.warning("⚠️ Please consult with a healthcare professional immediately for further evaluation.")
-        else:
-            st.success(breast_cancer_diagnosis)
-            st.info("ℹ️ Regular screening and check-ups are still recommended for preventive care.")
+        with col2:
+            mean_texture = st.number_input('Mean Texture', 
+                                        min_value=5.0, 
+                                        max_value=40.0, 
+                                        step=0.1, 
+                                        value=18.0,
+                                        help="Standard deviation of gray-scale values")
+            
+        with col1:
+            mean_perimeter = st.number_input('Mean Perimeter', 
+                                        min_value=40.0, 
+                                        max_value=200.0, 
+                                        step=0.1, 
+                                        value=100.0,
+                                        help="Mean size of the core tumor")
+        
+        with col2:
+            mean_area = st.number_input('Mean Area', 
+                                    min_value=200.0, 
+                                    max_value=2000.0, 
+                                    step=1.0, 
+                                    value=800.0,
+                                    help="Mean area of the core tumor")
+            
+        with col1:
+            mean_smoothness = st.number_input('Mean Smoothness', 
+                                            min_value=0.05, 
+                                            max_value=0.20, 
+                                            step=0.001, 
+                                            value=0.10,
+                                            help="Mean of local variation in radius lengths")
+        
+        # Add information about the measurements
+        st.info("""
+        💡 Information about measurements:
+        - Radius: Mean of distances from center to points on the perimeter
+        - Texture: Standard deviation of gray-scale values
+        - Perimeter: Size of the core tumor
+        - Area: Area of the core tumor
+        - Smoothness: Local variation in radius lengths
+        """)
+        with col_result:
+                image = " https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRpjytAylWtYbdWtgH9U825dtDv1A3J9VfcTEWWpcipvwxHZtWiW7ZPHYalk-w9BjT3Dc&usqp=CAU "
+                st.markdown(
+                    """
+                    <style>
+                    .rounded-image {
+                        border-radius: 15px; /* Adjust the roundness */
+                        overflow: hidden;
+                    }
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )
+                st.markdown(
+                    f"""
+                    <div class="rounded-image">
+                        <img src="{image}" alt="Heart Health" style="width: 100%; height: auto;">
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                breast_cancer_diagnosis = ''
+                
+                if st.button('Breast Cancer Test Result'):
+                    user_input = [mean_radius, mean_texture, mean_perimeter, 
+                                mean_area, mean_smoothness]
+                    
+                    breast_cancer_prediction = breast_cancer_model.predict([user_input])
+                    
+                    if breast_cancer_prediction[0] == 1:
+                        breast_cancer_diagnosis = 'The breast mass is malignant (cancerous)'
+                    else:
+                        breast_cancer_diagnosis = 'The breast mass is benign (non-cancerous)'
+                        
+                if breast_cancer_diagnosis:
+                    if 'malignant' in breast_cancer_diagnosis:
+                        st.error(breast_cancer_diagnosis)
+                        st.warning("⚠️ Please consult with a healthcare professional immediately for further evaluation.")
+                    else:
+                        st.success(breast_cancer_diagnosis)
+                        st.info("ℹ️ Regular screening and check-ups are still recommended for preventive care.")
 
 
 # [Previous code remains exactly the same until after the breast cancer section]
@@ -400,123 +509,150 @@ if selected == 'Diabetes Prediction':
     
     # Page title
     st.title('Diabetes Prediction using ML')
-    
+    col_form, col_result = st.columns([2, 1])
+
+    # Left column: Input form
+    with col_form:
+        st.subheader("Enter Patient Details")
     # Input form
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        age = st.number_input('Age', 
-                            min_value=1, 
-                            max_value=120, 
-                            step=1, 
-                            value=25)
+        col1, col2, col3 = st.columns(3)
         
-    with col2:
-        gender = st.selectbox('Gender',
-                            options=['Female', 'Male', 'Other'],
-                            format_func=lambda x: x)
+        with col1:
+            age = st.number_input('Age', 
+                                min_value=1, 
+                                max_value=120, 
+                                step=1, 
+                                value=25)
+            
+        with col2:
+            gender = st.selectbox('Gender',
+                                options=['Female', 'Male', 'Other'],
+                                format_func=lambda x: x)
+            
+        with col3:
+            bmi = st.number_input('BMI',
+                                min_value=10.0,
+                                max_value=50.0,
+                                step=0.1,
+                                value=25.0)
         
-    with col3:
-        bmi = st.number_input('BMI',
-                            min_value=10.0,
-                            max_value=50.0,
-                            step=0.1,
-                            value=25.0)
-    
-    with col1:
-        hypertension = st.selectbox('Hypertension',
-                                  options=['No', 'Yes'],
-                                  format_func=lambda x: x)
-        
-    with col2:
-        heart_disease = st.selectbox('Heart Disease',
-                                   options=['No', 'Yes'],
-                                   format_func=lambda x: x)
-        
-    with col3:
-        HbA1c_level = st.number_input('HbA1c Level',
-                                    min_value=3.0,
-                                    max_value=9.0,
-                                    step=0.1,
-                                    value=5.0)
-    
-    with col1:
-        blood_glucose_level = st.number_input('Blood Glucose Level',
-                                           min_value=70,
-                                           max_value=300,
-                                           step=1,
-                                           value=120)
-        
-    with col2:
-        smoking_history = st.selectbox('Smoking History',
-                                    options=['No Info', 'current', 'ever', 'former', 'never', 'not current'],
+        with col1:
+            hypertension = st.selectbox('Hypertension',
+                                    options=['No', 'Yes'],
                                     format_func=lambda x: x)
+            
+        with col2:
+            heart_disease = st.selectbox('Heart Disease',
+                                    options=['No', 'Yes'],
+                                    format_func=lambda x: x)
+            
+        with col3:
+            HbA1c_level = st.number_input('HbA1c Level',
+                                        min_value=3.0,
+                                        max_value=9.0,
+                                        step=0.1,
+                                        value=5.0)
+        
+        with col1:
+            blood_glucose_level = st.number_input('Blood Glucose Level',
+                                            min_value=70,
+                                            max_value=300,
+                                            step=1,
+                                            value=120)
+            
+        with col2:
+            smoking_history = st.selectbox('Smoking History',
+                                        options=['No Info', 'current', 'ever', 'former', 'never', 'not current'],
+                                        format_func=lambda x: x)
+        
+        # Add information about the measurements
+        st.info("""
+        💡 Important Information:
+        - BMI: Body Mass Index (weight in kg / height in meters squared)
+        - HbA1c: Glycated hemoglobin test (measures average blood sugar over past 2-3 months)
+        - Normal HbA1c: Below 5.7%
+        - Prediabetes HbA1c: 5.7% to 6.4%
+        - Diabetes HbA1c: 6.5% or higher
+        """)
+        
+        # Encoding dictionaries
+        gender_encoding = {'Female': 0, 'Male': 1, 'Other': 2}
+        smoking_encoding = {'No Info': 0, 'current': 1, 'ever': 2, 'former': 3, 'never': 4, 'not current': 5}
+        yes_no_encoding = {'No': 0, 'Yes': 1}
+
+    # Left column: Input form
     
-    # Add information about the measurements
-    st.info("""
-    💡 Important Information:
-    - BMI: Body Mass Index (weight in kg / height in meters squared)
-    - HbA1c: Glycated hemoglobin test (measures average blood sugar over past 2-3 months)
-    - Normal HbA1c: Below 5.7%
-    - Prediabetes HbA1c: 5.7% to 6.4%
-    - Diabetes HbA1c: 6.5% or higher
-    """)
-    
-    # Encoding dictionaries
-    gender_encoding = {'Female': 0, 'Male': 1, 'Other': 2}
-    smoking_encoding = {'No Info': 0, 'current': 1, 'ever': 2, 'former': 3, 'never': 4, 'not current': 5}
-    yes_no_encoding = {'No': 0, 'Yes': 1}
-    
-    # Prediction code
-    diabetes_diagnosis = ''
-    
-    if st.button('Diabetes Test Result'):
-        # Encode categorical variables
-        gender_encoded = gender_encoding[gender]
-        smoking_history_encoded = smoking_encoding[smoking_history]
-        hypertension_encoded = yes_no_encoding[hypertension]
-        heart_disease_encoded = yes_no_encoding[heart_disease]
-        
-        user_input = [age, hypertension_encoded, heart_disease_encoded, 
-                     bmi, HbA1c_level, blood_glucose_level,
-                     smoking_history_encoded, gender_encoded]
-        
-        diabetes_prediction = diabetes_model.predict([user_input])
-        
-        if diabetes_prediction[0] == 1:
-            diabetes_diagnosis = 'The person is likely to have diabetes'
-            st.error(diabetes_diagnosis)
-            st.warning("""
-            ⚠️ Important Next Steps:
-            1. Consult with a healthcare provider immediately
-            2. Get a comprehensive blood sugar test
-            3. Begin monitoring your blood sugar levels
-            4. Consider lifestyle modifications
-            """)
-        else:
-            diabetes_diagnosis = 'The person is not likely to have diabetes'
-            st.success(diabetes_diagnosis)
-            st.info("""
-            ℹ️ Healthy Habits to Maintain:
-            1. Regular exercise
-            2. Balanced diet
-            3. Maintain healthy weight
-            4. Regular check-ups
-            5. Adequate sleep
-            """)
-        
-        # Display risk factors if present
-        risk_factors = []
-        if bmi > 25:
-            risk_factors.append("High BMI")
-        if HbA1c_level > 5.7:
-            risk_factors.append("Elevated HbA1c")
-        if blood_glucose_level > 140:
-            risk_factors.append("High Blood Glucose")
-        if hypertension == "Yes":
-            risk_factors.append("Hypertension")
-        if heart_disease == "Yes":
-            risk_factors.append("Heart Disease")
-        
-        if risk_factors:
-            st.warning("Risk Factors Detected: " + ", ".join(risk_factors))
+        with col_result:
+                image = "https://partheniumprojects.com/wp-content/uploads/2019/01/Diabetes-Prediction-Using-Data-Mining.jpg"
+                st.markdown(
+                    """
+                    <style>
+                    .rounded-image {
+                        border-radius: 15px; /* Adjust the roundness */
+                        overflow: hidden;
+                    }
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )
+                st.markdown(
+                    f"""
+                    <div class="rounded-image">
+                        <img src="{image}" alt="Heart Health" style="width: 100%; height: auto;">
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                # Prediction code
+                diabetes_diagnosis = ''
+                
+                if st.button('Diabetes Test Result'):
+                    # Encode categorical variables
+                    gender_encoded = gender_encoding[gender]
+                    smoking_history_encoded = smoking_encoding[smoking_history]
+                    hypertension_encoded = yes_no_encoding[hypertension]
+                    heart_disease_encoded = yes_no_encoding[heart_disease]
+                    
+                    user_input = [age, hypertension_encoded, heart_disease_encoded, 
+                                bmi, HbA1c_level, blood_glucose_level,
+                                smoking_history_encoded, gender_encoded]
+                    
+                    diabetes_prediction = diabetes_model.predict([user_input])
+                    
+                    if diabetes_prediction[0] == 1:
+                        diabetes_diagnosis = 'The person is likely to have diabetes'
+                        st.error(diabetes_diagnosis)
+                        st.warning("""
+                        ⚠️ Important Next Steps:
+                        1. Consult with a healthcare provider immediately
+                        2. Get a comprehensive blood sugar test
+                        3. Begin monitoring your blood sugar levels
+                        4. Consider lifestyle modifications
+                        """)
+                    else:
+                        diabetes_diagnosis = 'The person is not likely to have diabetes'
+                        st.success(diabetes_diagnosis)
+                        st.info("""
+                        ℹ️ Healthy Habits to Maintain:
+                        1. Regular exercise
+                        2. Balanced diet
+                        3. Maintain healthy weight
+                        4. Regular check-ups
+                        5. Adequate sleep
+                        """)
+                    
+                    # Display risk factors if present
+                    risk_factors = []
+                    if bmi > 25:
+                        risk_factors.append("High BMI")
+                    if HbA1c_level > 5.7:
+                        risk_factors.append("Elevated HbA1c")
+                    if blood_glucose_level > 140:
+                        risk_factors.append("High Blood Glucose")
+                    if hypertension == "Yes":
+                        risk_factors.append("Hypertension")
+                    if heart_disease == "Yes":
+                        risk_factors.append("Heart Disease")
+                    
+                    if risk_factors:
+                        st.warning("Risk Factors Detected: " + ", ".join(risk_factors))
