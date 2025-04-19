@@ -12,7 +12,7 @@ st.set_page_config(page_title="Health Assistant",
 working_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Load the saved models
-heart_disease_model = pickle.load(open(f'{working_dir}/saved_models/heart_disease_model.sav', 'rb'))
+heart_disease_model = pickle.load(open('./saved_models/heart_disease_model.sav', 'rb'))
 lung_cancer_model = pickle.load(open(f'{working_dir}/saved_models/lung_cancer_model.sav', 'rb'))
 kidney_disease_model = pickle.load(open(f'{working_dir}/saved_models/kidney_disease_model.sav', 'rb'))
 breast_cancer_model = pickle.load(open(f'{working_dir}/saved_models/breast_cancer_model.sav', 'rb'))
