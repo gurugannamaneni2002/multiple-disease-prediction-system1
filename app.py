@@ -595,14 +595,7 @@ if selected == 'Diabetes Prediction':
                     """,
                     unsafe_allow_html=True
                 )
-                st.markdown(
-                    f"""
-                    <div class="rounded-image">
-                        <img src="{image}" alt="Heart Health" style="width: 100%; height: auto;">
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+                
                 # Prediction code
                 diabetes_diagnosis = ''
                 
